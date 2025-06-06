@@ -37,7 +37,7 @@ import logo from '../assets/logo.png';
 
 const ministryContacts = [
   {
-    ministry: 'Music Ministry',
+    ministry: 'Music Team',
     leader: 'John Smith',
     email: 'music@pamukidchurch.org',
     phone: '+63 912 345 6789',
@@ -45,44 +45,20 @@ const ministryContacts = [
     location: 'Church Music Room',
   },
   {
-    ministry: 'Youth Ministry',
-    leader: 'Sarah Johnson',
-    email: 'youth@pamukidchurch.org',
-    phone: '+63 923 456 7890',
-    schedule: 'Meetings: Friday 6:00 PM - 8:00 PM',
-    location: 'Youth Center',
+    ministry: 'Food Team',
+    leader: 'Anna Cruz',
+    email: 'food@pamukidchurch.org',
+    phone: '+63 911 222 3333',
+    schedule: 'Meetings: 2nd Sunday after service',
+    location: 'Church Kitchen',
   },
   {
-    ministry: "Children's Ministry",
+    ministry: 'Children Ministry',
     leader: 'Maria Santos',
     email: 'children@pamukidchurch.org',
     phone: '+63 934 567 8901',
     schedule: 'Sunday School: 9:00 AM - 10:30 AM',
-    location: 'Children\'s Hall',
-  },
-  {
-    ministry: 'Hospitality Ministry',
-    leader: 'Robert Cruz',
-    email: 'hospitality@pamukidchurch.org',
-    phone: '+63 945 678 9012',
-    schedule: 'As scheduled for events',
-    location: 'Church Fellowship Hall',
-  },
-  {
-    ministry: 'Prayer Ministry',
-    leader: 'Grace Lee',
-    email: 'prayer@pamukidchurch.org',
-    phone: '+63 956 789 0123',
-    schedule: 'Prayer Meeting: Wednesday 7:00 PM',
-    location: 'Prayer Room',
-  },
-  {
-    ministry: 'Media & Technical Ministry',
-    leader: 'David Garcia',
-    email: 'media@pamukidchurch.org',
-    phone: '+63 967 890 1234',
-    schedule: 'Service Hours + Special Events',
-    location: 'Tech Booth',
+    location: "Children's Hall",
   },
 ];
 

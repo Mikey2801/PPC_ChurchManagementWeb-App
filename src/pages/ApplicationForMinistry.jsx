@@ -18,14 +18,9 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 const ministries = [
-  'Worship Team',
-  'Sunday School',
-  'Youth Ministry',
-  'Outreach',
-  'Prayer Team',
-  'Hospitality',
-  'Media & Technology',
-  'Choir',
+  'Music Team',
+  'Food Team',
+  'Children Ministry',
 ];
 
 export default function ApplicationForMinistry() {
