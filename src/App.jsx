@@ -34,33 +34,13 @@ export const PublicPageWrapper = ({ children }) => (
 );
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !isAuthenticated()) {
-      navigate('/login');
-    }
-  }, [loading, isAuthenticated, navigate]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  return isAuthenticated() ? children : null;
+  // For now, just render the children without any protection
+  return children;
 };
 
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && isAuthenticated()) {
-      navigate('/dashboard');
-    }
-  }, [loading, isAuthenticated, navigate]);
-
-  return !isAuthenticated() ? children : null;
+  // For now, just render the children without any redirection
+  return children;
 };
 
 function AppRoutes() {

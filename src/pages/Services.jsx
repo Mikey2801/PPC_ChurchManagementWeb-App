@@ -27,21 +27,21 @@ export default function Services() {
       title: 'Mass and Events Schedule',
       description: 'Join us for Sunday worship and Fun events!',
       icon: <CalendarMonthIcon sx={{ fontSize: 40 }} />,
-      path: '/mass-attendance',
+      path: '/dashboard/mass-attendance',
       color: theme.palette.primary.light
     },
     {
       title: 'Apply for Ministry',
       description: 'Ready to Serve? Answer Your Calling with Our Ministry Program!',
       icon: <ChurchIcon sx={{ fontSize: 40 }} />,
-      path: '/application-for-ministry',
+      path: '/dashboard/ministry/apply',
       color: theme.palette.primary.light
     },
     {
       title: 'Baptismal',
       description: 'Ready to take the plunge? Sign up for our baptism class and dive into a meaningful journey of faith.',
       icon: <ArticleIcon sx={{ fontSize: 40 }} />,
-      path: '/baptismal-certificate',
+      path: '/dashboard/baptismal-certificate',
       color: theme.palette.primary.light
     },
     {
@@ -148,6 +148,10 @@ export default function Services() {
                 <Button
                   variant="outlined"
                   color="primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(service.path);
+                  }}
                   sx={{
                     mt: 2,
                     width: '100%',

@@ -56,7 +56,6 @@ const Donate = () => {
   const [formData, setFormData] = useState({
     amount: '',
     customAmount: '',
-    frequency: 'one-time',
     category: '',
     firstName: '',
     lastName: '',
@@ -225,34 +224,6 @@ const Donate = () => {
                   )}
                 </Box>
 
-                {/* Donation Frequency */}
-                <Box mb={4}>
-                  <FormControl component="fieldset">
-                    <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                      Donation Frequency
-                    </Typography>
-                    <Box display="flex" flexWrap="wrap" gap={2}>
-                      {[
-                        { value: 'one-time', label: 'One-time' },
-                        { value: 'weekly', label: 'Weekly' },
-                        { value: 'monthly', label: 'Monthly' },
-                        { value: 'quarterly', label: 'Quarterly' },
-                        { value: 'yearly', label: 'Yearly' },
-                      ].map((option) => (
-                        <Button
-                          key={option.value}
-                          variant={formData.frequency === option.value ? 'contained' : 'outlined'}
-                          color="primary"
-                          onClick={() => setFormData({...formData, frequency: option.value})}
-                          type="button"
-                          sx={{ textTransform: 'none' }}
-                        >
-                          {option.label}
-                        </Button>
-                      ))}
-                    </Box>
-                  </FormControl>
-                </Box>
 
                 {/* Donor Information */}
                 <Typography variant="h6" component="h3" gutterBottom sx={{ mt: 4, mb: 2, fontWeight: 600 }}>

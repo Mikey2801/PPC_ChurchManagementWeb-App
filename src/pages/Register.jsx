@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, TextField, Button, Typography, MenuItem, IconButton, InputAdornment, Stepper, Step, StepLabel } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import phAddresses from '../data/ph-addresses.json';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -17,9 +18,10 @@ const Register = () => {
     gender: '',
     
     // Address
-    street: '',
-    city: '',
     province: '',
+    city: '',
+    barangay: '',
+    street: '',
     
     // Contact
     phone: '',
@@ -55,6 +57,26 @@ const Register = () => {
     // Add registration logic here
     navigate('/login');
   };
+
+  // Address cascading logic
+  const [availableCities, setAvailableCities] = useState([]);
+  const [availableBarangays, setAvailableBarangays] = useState([]);
+
+  useEffect(() => {
+    // Update cities when province changes
+    const provinceObj = phAddresses.provinces.find(p => p.name === formData.province);
+    setAvailableCities(provinceObj ? provinceObj.cities : []);
+    setAvailableBarangays([]);
+    setFormData(prev => ({ ...prev, city: '', barangay: '' }));
+  }, [formData.province]);
+
+  useEffect(() => {
+    // Update barangays when city changes
+    const provinceObj = phAddresses.provinces.find(p => p.name === formData.province);
+    const cityObj = provinceObj && provinceObj.cities.find(c => c.name === formData.city);
+    setAvailableBarangays(cityObj ? cityObj.barangays : []);
+    setFormData(prev => ({ ...prev, barangay: '' }));
+  }, [formData.city, formData.province]);
 
   const renderPersonalInfo = () => (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -117,42 +139,40 @@ const Register = () => {
 
       <TextField
         fullWidth
-        select
-        name="street"
-        placeholder="Street/Barangay"
-        value={formData.street}
-        onChange={handleChange}
-        variant="outlined"
-      >
-        <MenuItem value="street1">Street 1</MenuItem>
-        <MenuItem value="street2">Street 2</MenuItem>
-      </TextField>
-
-      <TextField
-        fullWidth
-        select
-        name="city"
-        placeholder="Town/City"
-        value={formData.city}
-        onChange={handleChange}
-        variant="outlined"
-      >
-        <MenuItem value="city1">City 1</MenuItem>
-        <MenuItem value="city2">City 2</MenuItem>
-      </TextField>
-
-      <TextField
-        fullWidth
-        select
         name="province"
-        placeholder="Province"
+        label="Province"
         value={formData.province}
         onChange={handleChange}
         variant="outlined"
-      >
-        <MenuItem value="province1">Province 1</MenuItem>
-        <MenuItem value="province2">Province 2</MenuItem>
-      </TextField>
+        placeholder="e.g. Laguna"
+      />
+      <TextField
+        fullWidth
+        name="city"
+        label="City/Municipality"
+        value={formData.city}
+        onChange={handleChange}
+        variant="outlined"
+        placeholder="e.g. San Pablo City"
+      />
+      <TextField
+        fullWidth
+        name="barangay"
+        label="Barangay"
+        value={formData.barangay}
+        onChange={handleChange}
+        variant="outlined"
+        placeholder="e.g. Barangay II-B"
+      />
+      <TextField
+        fullWidth
+        name="street"
+        label="Street/Zone/Purok (optional)"
+        value={formData.street}
+        onChange={handleChange}
+        variant="outlined"
+        placeholder="House No., Street, Zone, Purok, etc."
+      />
 
       <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>Contacts</Typography>
 

@@ -153,9 +153,9 @@ export default function ApplicationMinistryContacts() {
             <Button
               variant="outlined"
               startIcon={<ArrowBackIcon />}
-              onClick={() => navigate('/services')}
+              onClick={() => navigate('/dashboard/ministry/apply')}
             >
-              Back to Services
+              Back to Application
             </Button>
           </Box>
         </Box>

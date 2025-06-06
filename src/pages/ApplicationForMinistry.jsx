@@ -86,7 +86,7 @@ export default function ApplicationForMinistry() {
 
     setShowSuccess(true);
     setTimeout(() => {
-      navigate('/services');
+      navigate('/dashboard');
     }, 2000);
   };
 
@@ -108,16 +108,27 @@ export default function ApplicationForMinistry() {
             <Button
               variant="outlined"
               startIcon={<ArrowBackIcon />}
-              onClick={() => navigate('/services')}
+              onClick={() => navigate('/dashboard')}
             >
-              Back to Services
+              Back to Dashboard
             </Button>
           </Box>
         </Box>
 
         <Typography variant="body1" color="text.secondary" paragraph>
           Thank you for your interest in serving in our church ministries.
-          Please fill out the form below to apply.
+          Please fill out the form below to apply. If you have any questions, please visit our
+          {' '}
+          <Button 
+            variant="text" 
+            color="primary" 
+            size="small"
+            onClick={() => navigate('/dashboard/ministry/contacts')}
+            sx={{ textTransform: 'none', p: 0, minWidth: 'auto' }}
+          >
+            Ministry Contacts
+          </Button>
+          {' '}page to get in touch with ministry leaders.
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit}>

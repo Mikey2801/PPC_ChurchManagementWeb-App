@@ -74,7 +74,7 @@ export default function BaptismalCertificate() {
 
     setShowSuccess(true);
     setTimeout(() => {
-      navigate('/services');
+      navigate('/dashboard');
     }, 2000);
   };
 
@@ -96,9 +96,9 @@ export default function BaptismalCertificate() {
             <Button
               variant="outlined"
               startIcon={<ArrowBackIcon />}
-              onClick={() => navigate('/services')}
+              onClick={() => navigate('/dashboard')}
             >
-              Back to Services
+              Back to Dashboard
             </Button>
           </Box>
           </Box>

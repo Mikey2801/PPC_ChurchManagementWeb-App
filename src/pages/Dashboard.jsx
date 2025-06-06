@@ -53,9 +53,9 @@ const Dashboard = () => {
       path: '/dashboard/ministry/apply' 
     },
     { 
-      title: 'Donations', 
+      title: 'Baptismal Cert', 
       icon: <ReceiptIcon fontSize="large" color="primary" />, 
-      path: '/donate' 
+      path: '/dashboard/baptismal-certificate' 
     },
   ];
 

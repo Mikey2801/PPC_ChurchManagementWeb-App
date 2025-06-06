@@ -24,25 +24,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    try {
-      // Replace with your actual login API call
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      if (!response.ok) throw new Error('Login failed');
-      
-      const data = await response.json();
-      setUser(data.user);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      return true;
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
+    // For now, just create a mock user and allow login
+    const mockUser = { email, name: email.split('@')[0] };
+    setUser(mockUser);
+    localStorage.setItem('token', 'mock-token');
+    localStorage.setItem('user', JSON.stringify(mockUser));
+    return true;
   };
 
   const logout = () => {
@@ -53,7 +40,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isAuthenticated = () => {
-    return !!user;
+    // Always return true to bypass authentication for now
+    return true;
   };
 
   return (
