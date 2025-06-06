@@ -52,11 +52,12 @@ const Donate = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     amount: '',
     customAmount: '',
     frequency: 'one-time',
+    category: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -64,16 +65,29 @@ const Donate = () => {
     message: '',
     isAnonymous: false,
     paymentMethod: 'gcash',
+    receipt: null,
   });
+  const [confirmation, setConfirmation] = useState(false);
+  const [receiptPreview, setReceiptPreview] = useState(null);
 
   const presetAmounts = [100, 500, 1000, 2000, 5000];
+  const donationCategories = [
+    { value: 'tithes', label: 'Tithes' },
+    { value: 'offerings', label: 'Offerings' },
+    { value: 'special', label: 'Special Contributions' },
+  ];
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    const { name, value, type, checked, files } = e.target;
+    if (type === 'file') {
+      setFormData(prev => ({ ...prev, receipt: files[0] }));
+      setReceiptPreview(files[0] ? URL.createObjectURL(files[0]) : null);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
   };
 
   const handleAmountSelect = (amount) => {
@@ -86,10 +100,26 @@ const Donate = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Form submitted:', formData);
-    // Redirect to payment gateway or show success message
+    // Here you would send formData to the server or backend
+    setConfirmation(true);
+    // Optionally reset formData here
   };
+
+  if (confirmation) {
+    return (
+      <Box sx={{ py: 8, minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Paper sx={{ p: 6, maxWidth: 500, textAlign: 'center' }}>
+          <Typography variant="h4" gutterBottom color="primary" sx={{ fontWeight: 700 }}>
+            Thank You for Your Donation!
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Your donation details have been submitted for administrator verification. You will receive a confirmation once your donation is verified.
+          </Typography>
+          <Button variant="contained" color="primary" onClick={() => navigate('/')}>Back to Home</Button>
+        </Paper>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ 
@@ -123,12 +153,29 @@ const Donate = () => {
           </Typography>
         </Box>
 
-
         <Grid container spacing={4}>
           {/* Donation Form */}
           <Grid item xs={12} md={8}>
             <DonationCard>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} encType="multipart/form-data">
+                {/* Donation Category */}
+                <Box mb={4}>
+                  <FormControl fullWidth required>
+                    <InputLabel id="category-label">Donation Category</InputLabel>
+                    <Select
+                      labelId="category-label"
+                      id="category"
+                      name="category"
+                      value={formData.category}
+                      label="Donation Category"
+                      onChange={handleInputChange}
+                    >
+                      {donationCategories.map(cat => (
+                        <MenuItem key={cat.value} value={cat.value}>{cat.label}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
                 <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
                   Make a Donation
                 </Typography>
@@ -207,7 +254,6 @@ const Donate = () => {
                   </FormControl>
                 </Box>
 
-
                 {/* Donor Information */}
                 <Typography variant="h6" component="h3" gutterBottom sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
                   Your Information
@@ -281,7 +327,6 @@ const Donate = () => {
                   </Grid>
                 </Grid>
 
-
                 {/* Payment Method */}
                 <Typography variant="h6" component="h3" gutterBottom sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
                   Payment Method
@@ -316,6 +361,56 @@ const Donate = () => {
                       </Typography>
                     </Box>
                   )}
+                  {formData.paymentMethod === 'bank_transfer' && (
+                    <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1, mb: 2 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Bank: <strong>BDO</strong><br/>
+                        Account Name: <strong>Pamukid Presbyterian Church</strong><br/>
+                        Account Number: <strong>1234-5678-90</strong>
+                      </Typography>
+                    </Box>
+                  )}
+                  {formData.paymentMethod === 'paypal' && (
+                    <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1, mb: 2 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        PayPal: <strong>paypal.me/pamukidchurch</strong>
+                      </Typography>
+                    </Box>
+                  )}
+                  {formData.paymentMethod === 'credit_card' && (
+                    <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1, mb: 2 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        Please use our PayPal link for credit/debit card donations: <strong>paypal.me/pamukidchurch</strong>
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+
+                {/* Receipt Upload */}
+                <Box mb={4}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                    Upload Receipt
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    sx={{ mb: 1 }}
+                  >
+                    Upload Screenshot/Scanned Copy
+                    <input
+                      type="file"
+                      name="receipt"
+                      accept="image/*,application/pdf"
+                      hidden
+                      onChange={handleInputChange}
+                    />
+                  </Button>
+                  {receiptPreview && (
+                    <Box mt={1}>
+                      <Typography variant="body2">Preview:</Typography>
+                      <img src={receiptPreview} alt="Receipt Preview" style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: 8 }} />
+                    </Box>
+                  )}
                 </Box>
 
                 {/* Submit Button */}
@@ -334,7 +429,7 @@ const Donate = () => {
                     mt: 2,
                   }}
                 >
-                  Donate Now
+                  Submit Donation
                 </Button>
               </form>
             </DonationCard>
