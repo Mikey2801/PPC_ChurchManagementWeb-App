@@ -2,27 +2,27 @@ import React, { useState } from 'react';
 import { Box, Typography, Paper, Button, Divider, Snackbar, Alert, TextField, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const classSchedules = [
+const baptismEvents = [
   {
-    name: 'Baptism Preparation Session - October 2024',
-    date: '2024-10-20',
-    time: '2:00 PM',
-    venue: 'Church Hall',
+    name: 'Baptism Ceremony - October 2024',
+    date: '2024-10-29',
+    time: '10:00 AM',
+    location: 'Main Sanctuary',
   },
-  // Add more schedules as needed
+  // Add more events as needed
 ];
 
-export default function BaptismalClass() {
+export default function BaptismalScheduling() {
   const navigate = useNavigate();
-  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!selectedClass) {
-      setErrorMsg('Please select a class schedule.');
+    if (!selectedEvent) {
+      setErrorMsg('Please select a baptism event.');
       setShowError(true);
       return;
     }
@@ -37,26 +37,26 @@ export default function BaptismalClass() {
     <Box sx={{ maxWidth: 420, mx: 'auto', my: 2 }}>
       <Paper sx={{ p: 3, borderRadius: 4 }}>
         <Typography variant="h5" fontWeight="bold" align="center" sx={{ mb: 2 }}>
-          Baptismal Class
+          Baptismal Scheduling
         </Typography>
         <Divider sx={{ my: 2 }} />
         <form onSubmit={handleSubmit}>
           <TextField
             select
-            label="Select Class Schedule"
-            value={selectedClass}
-            onChange={e => setSelectedClass(e.target.value)}
+            label="Select Baptism Event"
+            value={selectedEvent}
+            onChange={e => setSelectedEvent(e.target.value)}
             fullWidth
             sx={{ mb: 3 }}
           >
-            {classSchedules.map((cls, idx) => (
-              <MenuItem key={idx} value={cls.name}>
-                {cls.name} — {cls.date} at {cls.time} ({cls.venue})
+            {baptismEvents.map((evt, idx) => (
+              <MenuItem key={idx} value={evt.name}>
+                {evt.name} — {evt.date} at {evt.time} ({evt.location})
               </MenuItem>
             ))}
           </TextField>
           <Button type="submit" variant="contained" color="success" fullWidth>
-            Request Schedule
+            Register for Event
           </Button>
         </form>
         <Snackbar
@@ -65,7 +65,7 @@ export default function BaptismalClass() {
           onClose={() => setShowSuccess(false)}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert severity="success" variant="filled">Request submitted! Pending approval.</Alert>
+          <Alert severity="success" variant="filled">Registration submitted! Pending approval.</Alert>
         </Snackbar>
         <Snackbar
           open={showError}
