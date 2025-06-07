@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -17,10 +17,40 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Donate from './Donate';
+import BaptismalClass from './BaptismalClass';
+
+// Modal wrapper for Donate
+function DonateModal({ open, onClose }) {
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <Box sx={{ p: 2, position: 'relative' }}>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <Donate />
+      </Box>
+    </Dialog>
+  );
+}
 
 export default function Services() {
   const navigate = useNavigate();
   const theme = useTheme();
+  const [donateOpen, setDonateOpen] = useState(false);
+  const [baptismalClassOpen, setBaptismalClassOpen] = useState(false);
 
   const services = [
     {
@@ -48,10 +78,18 @@ export default function Services() {
       title: 'Donate',
       description: 'Support our church\'s mission through your generous donations.',
       icon: <DonateIcon sx={{ fontSize: 40 }} />,
-      path: '/donate',
+      modal: true,
       color: theme.palette.primary.light
     }
   ];
+
+  const handleServiceClick = (service) => {
+    if (service.modal) {
+      setDonateOpen(true);
+    } else {
+      navigate(service.path);
+    }
+  };
 
   return (
     <Box sx={{ py: 3 }}>
@@ -93,79 +131,56 @@ export default function Services() {
         {services.map((service) => (
           <Grid item xs={12} sm={6} md={4} key={service.title}>
             <Card 
-              onClick={() => navigate(service.path)}
+              onClick={() => handleServiceClick(service)}
               sx={{
                 height: '100%',
                 cursor: 'pointer',
                 transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
                 '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: theme.shadows[4]
+                  transform: 'scale(1.03)',
+                  boxShadow: 6,
                 },
-                bgcolor: theme.palette.background.paper,
-                borderRadius: 2
+                backgroundColor: service.color
               }}
             >
-              <CardContent sx={{ 
-                p: 3,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: 2,
-                height: '100%'
-              }}>
-                <Box 
-                  sx={{ 
-                    color: theme.palette.primary.main,
-                    bgcolor: theme.palette.primary.light,
-                    p: 1,
-                    borderRadius: 1
-                  }}
-                >
-                  {service.icon}
-                </Box>
-                
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontWeight: 'bold',
-                    color: 'text.primary'
-                  }}
-                >
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3 }}>
+                {service.icon}
+                <Typography variant="h6" fontWeight="bold" sx={{ mt: 2, mb: 1, color: 'text.primary' }}>
                   {service.title}
                 </Typography>
-                
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'text.secondary',
-                    flexGrow: 1
-                  }}
-                >
+                <Typography variant="body2" color="text.secondary" align="center" sx={{ flexGrow: 1 }}>
                   {service.description}
                 </Typography>
-
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(service.path);
-                  }}
-                  sx={{
-                    mt: 2,
-                    width: '100%',
-                    '&:hover': {
-                      bgcolor: theme.palette.primary.light,
-                    }
-                  }}
-                >
-                  Learn More
-                </Button>
               </CardContent>
             </Card>
           </Grid>
         ))}
+        {/* Baptismal Class Card */}
+        <Grid item xs={12} sm={6} md={4}>
+          <Card
+            onClick={() => setBaptismalClassOpen(true)}
+            sx={{
+              height: '100%',
+              cursor: 'pointer',
+              transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'scale(1.03)',
+                boxShadow: 6,
+              },
+              backgroundColor: theme.palette.primary.light
+            }}
+          >
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3 }}>
+              <ArticleIcon sx={{ fontSize: 40 }} />
+              <Typography variant="h6" fontWeight="bold" sx={{ mt: 2, mb: 1, color: 'text.primary' }}>
+                Baptismal Class
+              </Typography>
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ flexGrow: 1 }}>
+                Request and schedule a baptism class.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
       <Box sx={{ mt: 6 }}>
@@ -209,6 +224,23 @@ export default function Services() {
           </Grid>
         </Paper>
       </Box>
+          {/* Donate Modal */}
+      <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} />
+
+      {/* Inline Baptismal Class */}
+      {baptismalClassOpen && (
+        <Box sx={{ maxWidth: 420, mx: 'auto', my: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <IconButton onClick={() => setBaptismalClassOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <BaptismalClass onClose={() => setBaptismalClassOpen(false)} />
+        </Box>
+      )}
     </Box>
   );
-} 
+}
+
+// Modal wrapper for Donate
+

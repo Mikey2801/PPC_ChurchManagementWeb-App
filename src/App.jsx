@@ -24,6 +24,8 @@ import ApplicationMinistryContacts from './pages/ApplicationMinistryContacts';
 import Profile from './pages/Profile';
 import ProfileEdit from './pages/ProfileEdit';
 import BaptismalCertificate from './pages/BaptismalCertificate';
+import BaptismalClass from './pages/BaptismalClass';
+import BaptismalScheduling from './pages/BaptismalScheduling';
 
 // Wrapper for public pages
 export const PublicPageWrapper = ({ children }) => (
@@ -91,6 +93,8 @@ function AppRoutes() {
         <Route path="ministry/apply" element={<ApplicationForMinistry />} />
         <Route path="ministry/contacts" element={<ApplicationMinistryContacts />} />
         <Route path="baptismal-certificate" element={<BaptismalCertificate />} />
+        <Route path="baptismal-class" element={<BaptismalClass />} />
+        <Route path="baptismal-scheduling" element={<BaptismalScheduling />} />
       </Route>
 
       {/* Redirect unknown routes to home */}

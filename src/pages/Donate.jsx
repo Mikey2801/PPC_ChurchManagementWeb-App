@@ -48,7 +48,7 @@ const DonationAmountButton = styled(Button)(({ theme, selected }) => ({
   },
 }));
 
-const Donate = () => {
+const Donate = ({ onClose }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
@@ -101,7 +101,14 @@ const Donate = () => {
     e.preventDefault();
     // Here you would send formData to the server or backend
     setConfirmation(true);
-    // Optionally reset formData here
+    setTimeout(() => {
+      setConfirmation(false);
+      if (onClose) {
+        onClose();
+      } else {
+        navigate('/dashboard');
+      }
+    }, 2000);
   };
 
   if (confirmation) {
@@ -447,6 +454,11 @@ const Donate = () => {
       </Container>
     </Box>
   );
+};
+
+// Add a close button if used in modal
+Donate.defaultProps = {
+  onClose: null,
 };
 
 export default Donate;

@@ -1,28 +1,48 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Dialog, DialogContent, DialogActions, Grid, Paper } from '@mui/material';
-import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
-
-const highlightedDates = [
-  new Date(2025, 0, 7), // January 7
-  new Date(2025, 0, 14), // January 14
-  new Date(2025, 1, 14), // February 14
-];
-
+// If you use date-fns, uncomment the import below:
+// import { getDaysInMonth } from 'date-fns';
+// Fallback utility if not using date-fns:
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
 }
 
-function isSameDay(date1, date2) {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  );
-}
+import { Box, Typography, Button, Paper, Grid, Snackbar, Alert, Dialog, DialogContent } from '@mui/material';
+import { format, isSameDay } from 'date-fns';
+
+const massSchedules = {
+  [format(new Date(), 'yyyy-MM-dd')]: {
+    title: 'Special Mass (Today)',
+    time: '08:00 am - 09:00 am',
+    speaker: 'Pastor Kirby Ajero Preza',
+  },
+  '2025-06-02': {
+    title: 'Morning Mass',
+    time: '09:00 am - 10:00 am',
+    speaker: 'Pastor Kirby Ajero Preza',
+  },
+  '2025-06-08': {
+    title: 'Church Event',
+    time: '03:00 pm - 05:00 pm',
+    speaker: 'Event Coordinator',
+  },
+};
+
+const formatDate = (date) => format(date, 'yyyy-MM-dd');
+const formatWeekday = (date) => format(date, 'EEEE');
 
 export default function MassAttendance() {
+  // Highlighted dates: dates with massSchedules
+  const highlightedDates = Object.keys(massSchedules).map(dateStr => new Date(dateStr));
+
+
+
+  // Handler for selecting a date
+  const handleDateSelect = (date) => {
+    if (highlightedDates.some(hd => isSameDay(hd, date))) {
+      setSelectedDate(date);
+      setConfirmedAttendance(null);
+    }
+  }
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [confirmedAttendance, setConfirmedAttendance] = useState(null);
@@ -54,11 +74,7 @@ export default function MassAttendance() {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
   };
 
-  const handleDateSelect = (date) => {
-    if (highlightedDates.some(hd => isSameDay(hd, date))) {
-      setSelectedDate(date);
-    }
-  };
+
 
   const handleAttend = () => {
     setConfirmedAttendance(selectedDate);

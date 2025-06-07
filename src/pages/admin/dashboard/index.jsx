@@ -25,6 +25,7 @@ import {
   ArrowDownward as ArrowDownwardIcon
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import BaptismalApprovals from './BaptismalApprovals';
 
 // Sample data for the chart
 const data = [
@@ -260,6 +261,10 @@ export default function AdminDashboard() {
           </Paper>
         </Grid>
       </Grid>
+      {/* Baptismal Approvals Section */}
+      <Box sx={{ mt: 6 }}>
+        <BaptismalApprovals />
+      </Box>
     </Box>
   );
 }

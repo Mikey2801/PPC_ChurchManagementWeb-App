@@ -60,6 +60,22 @@ const ministryContacts = [
     schedule: 'Sunday School: 9:00 AM - 10:30 AM',
     location: "Children's Hall",
   },
+  {
+    ministry: 'Youth Ministry',
+    leader: 'Jane Doe',
+    email: 'youth@pamukidchurch.org',
+    phone: '+63 932 123 4567',
+    schedule: 'Meetings: Friday 6:00 PM - 8:00 PM',
+    location: 'Church Youth Room',
+  },
+  {
+    ministry: 'Worship Team',
+    leader: 'Bob Johnson',
+    email: 'worship@pamukidchurch.org',
+    phone: '+63 915 678 9012',
+    schedule: 'Rehearsals: Thursday 7:00 PM - 9:00 PM',
+    location: 'Church Sanctuary',
+  },
 ];
 
 export default function ApplicationMinistryContacts() {
