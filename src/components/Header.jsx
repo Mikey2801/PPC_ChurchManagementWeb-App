@@ -101,8 +101,9 @@ const Header = () => {
           {/* Right section with Login and Donate buttons */}
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
+              component={Link}
+              to="/login"
               variant="outlined"
-              onClick={() => navigate('/login')}
               sx={{
                 color: '#3C6255',
                 borderColor: '#3C6255',

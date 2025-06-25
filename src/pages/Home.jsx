@@ -25,7 +25,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
-const Dashboard = () => {
+const Home = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user, logout } = useAuth();
@@ -40,25 +40,24 @@ const Dashboard = () => {
     { 
       title: 'My Profile', 
       icon: <PersonIcon fontSize="large" color="primary" />, 
-      path: '/dashboard/profile' 
+      path: '/home/profile' 
     },
     { 
       title: 'Events', 
       icon: <EventIcon fontSize="large" color="primary" />, 
-      path: '/events' 
+      path: '/home/events' 
     },
     { 
       title: 'Ministries', 
       icon: <GroupsIcon fontSize="large" color="primary" />, 
-      path: '/dashboard/ministry/apply' 
+      path: '/home/ministry/apply' 
     },
     { 
       title: 'Baptismal Cert', 
       icon: <ReceiptIcon fontSize="large" color="primary" />, 
-      path: '/dashboard/baptismal-certificate' 
+      path: '/home/baptismal-certificate' 
     },
   ];
-
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: 4, mb: 4, borderRadius: 2 }}>
@@ -87,7 +86,7 @@ const Dashboard = () => {
             <Button 
               variant="outlined" 
               startIcon={<SettingsIcon />}
-              onClick={() => navigate('/dashboard/profile/edit')}
+              onClick={() => navigate('/home/profile/edit')}
               size={isMobile ? 'small' : 'medium'}
             >
               Settings
@@ -159,7 +158,7 @@ const Dashboard = () => {
             variant="contained" 
             color="primary" 
             sx={{ mt: 2 }}
-            onClick={() => navigate('/events')}
+            onClick={() => navigate('/home/events')}
           >
             View All Events
           </Button>
@@ -184,4 +183,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Home;

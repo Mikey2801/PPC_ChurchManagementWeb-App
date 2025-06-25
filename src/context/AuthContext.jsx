@@ -1,47 +1,150 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { auth } from '../utils/api';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    // Check for existing session
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
+  // Check if user is authenticated on initial load
+  const checkAuth = useCallback(async () => {
+    const token = localStorage.getItem('auth_token');
     
-    if (token && userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error('Failed to parse user data', error);
-      }
+    if (!token) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    try {
+      const userData = await auth.me();
+      setUser(userData);
+      setError(null);
+    } catch (err) {
+      console.error('Authentication check failed:', err);
+      localStorage.removeItem('auth_token');
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Redirect to login if not authenticated and trying to access protected route
+  useEffect(() => {
+    const publicPaths = ['/', '/about-us', '/our-team', '/our-program', '/events', '/visit-us', '/schedule', '/donate', '/login', '/register'];
+    const isPublicPath = publicPaths.some(path => location.pathname === path || location.pathname.startsWith('/public'));
+    
+    if (!loading && !user && !isPublicPath) {
+      navigate('/login', { state: { from: location }, replace: true });
+    }
+  }, [user, loading, navigate, location]);
+
   const login = async (email, password) => {
-    // For now, just create a mock user and allow login
-    const mockUser = { email, name: email.split('@')[0] };
-    setUser(mockUser);
-    localStorage.setItem('token', 'mock-token');
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    return true;
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // For development/testing only - remove in production
+      if (email === 'member@example.com' && password === 'password123') {
+        const mockUser = {
+          id: 1,
+          email: 'member@example.com',
+          name: 'Test Member',
+          roles: ['member'],
+          token: 'mock-jwt-token-for-development'
+        };
+        
+        localStorage.setItem('auth_token', mockUser.token);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        setUser(mockUser);
+        
+        const from = location.state?.from?.pathname || '/home';
+        navigate(from, { replace: true });
+        return { success: true };
+      }
+      
+      // For admin testing
+      if (email === 'admin@example.com' && password === 'admin123') {
+        const mockAdmin = {
+          id: 2,
+          email: 'admin@example.com',
+          name: 'Test Admin',
+          roles: ['admin'],
+          token: 'mock-jwt-token-for-admin'
+        };
+        
+        localStorage.setItem('auth_token', mockAdmin.token);
+        localStorage.setItem('user', JSON.stringify(mockAdmin));
+        setUser(mockAdmin);
+        
+        const from = location.state?.from?.pathname || '/admin/dashboard';
+        navigate(from, { replace: true });
+        return { success: true };
+      }
+      
+      // Actual API call for real authentication
+      const response = await auth.login({ email, password });
+      
+      // Store the token and user data
+      localStorage.setItem('auth_token', response.token);
+      setUser(response.user);
+      
+      // Redirect based on user role
+      const from = location.state?.from?.pathname || 
+                 (response.user.roles.includes('admin') ? '/admin/dashboard' : '/home');
+      navigate(from, { replace: true });
+      
+      return { success: true };
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const logout = useCallback(async () => {
+    try {
+      await auth.logout();
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      // Clear auth state and storage
+      localStorage.removeItem('auth_token');
+      setUser(null);
+      setError(null);
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const updateUser = (userData) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      ...userData
+    }));
+  };
+
+  const hasRole = (role) => {
+    if (!user || !user.roles) return false;
+    return user.roles.includes(role);
+  };
+
+  const hasAnyRole = (roles) => {
+    if (!user || !user.roles) return false;
+    return user.roles.some(role => roles.includes(role));
   };
 
   const isAuthenticated = () => {
-    // Always return true to bypass authentication for now
-    return true;
+    return !!user;
   };
 
   return (
@@ -49,9 +152,13 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         loading,
+        error,
         login,
         logout,
+        updateUser,
         isAuthenticated,
+        hasRole,
+        hasAnyRole,
       }}
     >
       {children}

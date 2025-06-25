@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { Box } from '@mui/material';
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Box, CircularProgress } from '@mui/material';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -16,7 +16,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import MassAndEventSchedule from './pages/MassAndEventSchedule';
 import Donate from './pages/Donate';
-import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
 import Services from './pages/Services';
 import MassAttendance from './pages/MassAttendance';
 import ApplicationForMinistry from './pages/ApplicationForMinistry';
@@ -26,7 +26,10 @@ import ProfileEdit from './pages/ProfileEdit';
 import BaptismalCertificate from './pages/BaptismalCertificate';
 import BaptismalClass from './pages/BaptismalClass';
 import BaptismalScheduling from './pages/BaptismalScheduling';
-
+import MembersList from './pages/MembersList';
+import AdminDashboard from './pages/admin/AdminDashboard';
+// ...
+<Route path="/dashboard/members" element={<MembersList />} />
 // Wrapper for public pages
 export const PublicPageWrapper = ({ children }) => (
   <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
@@ -35,13 +38,36 @@ export const PublicPageWrapper = ({ children }) => (
   </Box>
 );
 
+// Protected Route component
 const ProtectedRoute = ({ children }) => {
-  // For now, just render the children without any protection
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
   return children;
 };
 
-const PublicRoute = ({ children }) => {
-  // For now, just render the children without any redirection
+// Public Route component
+const PublicRoute = ({ children, restricted = false }) => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
+
+  if (isAuthenticated() && restricted) {
+    return <Navigate to={from} replace />;
+  }
+
   return children;
 };
 
@@ -62,8 +88,10 @@ function AppRoutes() {
       <Route
         path="/login"
         element={
-          <PublicRoute>
-            <PublicPageWrapper><Login /></PublicPageWrapper>
+          <PublicRoute restricted={true}>
+            <Box sx={{ pt: 8 }}>
+              <Login />
+            </Box>
           </PublicRoute>
         }
       />
@@ -76,16 +104,19 @@ function AppRoutes() {
         }
       />
       
+      {/* Redirect old dashboard URL to home */}
+      <Route path="/dashboard" element={<Navigate to="/home" replace />} />
+      
       {/* Protected Routes */}
       <Route
-        path="/dashboard/*"
+        path="/home/*"
         element={
           <ProtectedRoute>
             <Layout />
           </ProtectedRoute>
         }
       >
-        <Route index element={<Dashboard />} />
+        <Route index element={<Home />} />
         <Route path="services" element={<Services />} />
         <Route path="profile" element={<Profile />} />
         <Route path="profile/edit" element={<ProfileEdit />} />
@@ -95,7 +126,18 @@ function AppRoutes() {
         <Route path="baptismal-certificate" element={<BaptismalCertificate />} />
         <Route path="baptismal-class" element={<BaptismalClass />} />
         <Route path="baptismal-scheduling" element={<BaptismalScheduling />} />
+        <Route path="members" element={<MembersList />} />
       </Route>
+
+      {/* Admin Route */}
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Redirect unknown routes to home */}
       <Route path="*" element={<Navigate to="/" replace />} />

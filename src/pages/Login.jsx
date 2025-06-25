@@ -1,17 +1,44 @@
-import React, { useState } from 'react';
-import { Box, Container, TextField, Button, Typography, MenuItem, IconButton, InputAdornment, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { 
+  Box, 
+  Container, 
+  TextField, 
+  Button, 
+  Typography, 
+  MenuItem, 
+  IconButton, 
+  InputAdornment, 
+  Paper,
+  CircularProgress,
+  Alert,
+  Snackbar
+} from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
 
 const LoginScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
+  
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     userType: 'Member',
-    username: '',
+    email: '',
     password: ''
   });
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,16 +46,45 @@ const LoginScreen = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user types
+    if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add login logic here
-    if (formData.userType === 'Admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/dashboard');
+    
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      setError('Please enter both email and password');
+      return;
     }
+    
+    try {
+      setIsLoading(true);
+      setError('');
+      
+      // Call the login function from AuthContext
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
+        // Redirect based on user type or previous location
+        const from = location.state?.from?.pathname || 
+                   (formData.userType === 'Admin' ? '/admin/dashboard' : '/dashboard');
+        navigate(from, { replace: true });
+      } else {
+        setError(result.error || 'Login failed. Please try again.');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('An error occurred during login. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleCloseError = () => {
+    setError('');
   };
 
   return (
@@ -97,92 +153,131 @@ const LoginScreen = () => {
               gap: 2
             }}
           >
+            {/* Error Message */}
+            {error && (
+              <Alert severity="error" onClose={handleCloseError} sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            
             {/* User Type Selector */}
             <TextField
               select
-              fullWidth
+              label="Login As"
               name="userType"
               value={formData.userType}
               onChange={handleChange}
               variant="outlined"
-              size="small"
+              fullWidth
+              required
+              disabled={isLoading}
               sx={{ 
-                bgcolor: 'white',
+                mb: 2, 
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: 1
+                  bgcolor: 'white',
+                },
+                '& .Mui-disabled': {
+                  bgcolor: 'action.disabledBackground',
                 }
+              }}
+              SelectProps={{
+                native: false,
+                renderValue: (selected) => selected === 'Admin' ? 'Administrator' : selected,
+                MenuProps: {
+                  PaperProps: {
+                    style: {
+                      maxHeight: 200,
+                    },
+                  },
+                },
               }}
             >
               <MenuItem value="Member">Member</MenuItem>
-              <MenuItem value="Admin">Admin</MenuItem>
+              <MenuItem value="Admin">Administrator</MenuItem>
+              <MenuItem value="Treasurer">Treasurer</MenuItem>
             </TextField>
 
             {/* Username Field */}
             <TextField
-              fullWidth
-              name="username"
-              placeholder="Username"
-              value={formData.username}
+              label="Email Address"
+              name="email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
               variant="outlined"
-              size="small"
+              fullWidth
               required
-              sx={{ 
-                bgcolor: 'white',
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 1
-                }
+              disabled={isLoading}
+              autoComplete="email"
+              inputProps={{
+                'data-testid': 'email-input'
               }}
             />
 
             {/* Password Field */}
             <TextField
-              fullWidth
+              label="Password"
               name="password"
-              placeholder="Password"
               type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={handleChange}
               variant="outlined"
-              size="small"
+              fullWidth
               required
+              disabled={isLoading}
+              autoComplete="current-password"
+              inputProps={{
+                'data-testid': 'password-input'
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
-                      size="small"
+                      disabled={isLoading}
                     >
-                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
-              sx={{ 
-                bgcolor: 'white',
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 1
-                }
-              }}
             />
+
+            {/* Forgot Password Link */}
+            <Box sx={{ textAlign: 'right', mb: 1 }}>
+              <Button 
+                variant="text" 
+                size="small" 
+                onClick={() => navigate('/forgot-password')}
+                disabled={isLoading}
+              >
+                Forgot Password?
+              </Button>
+            </Box>
 
             {/* Login Button */}
             <Button
               type="submit"
               variant="contained"
+              size="large"
               fullWidth
-              sx={{ 
-                mt: 2,
-                py: 1,
-                borderRadius: 1,
-                bgcolor: '#4caf50',
+              disabled={isLoading}
+              sx={{
+                mt: 1,
+                py: 1.5,
+                bgcolor: '#2e7d32',
                 '&:hover': {
-                  bgcolor: '#43a047'
-                }
+                  bgcolor: '#1b5e20',
+                },
+                '&.Mui-disabled': {
+                  bgcolor: '#a5d6a7',
+                  color: 'white'
+                },
               }}
+              startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              Login
+              {isLoading ? 'Logging in...' : 'Login'}
             </Button>
 
             {/* Register Link */}
