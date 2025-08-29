@@ -29,6 +29,9 @@ const ProgramCard = ({ program }) => {
           borderRadius: 1,
           overflow: 'hidden',
           position: 'relative',
+          backgroundImage: program.image ? `url(${program.image})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           '&::after': {
             content: '""',
             position: 'absolute',
@@ -44,7 +47,24 @@ const ProgramCard = ({ program }) => {
           },
         }}
         aria-hidden="true"
-      />
+      >
+        {!program.image && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              color: 'text.secondary',
+              textAlign: 'center',
+              width: '100%',
+              px: 2,
+            }}
+          >
+            <Typography variant="body2">No Image Available</Typography>
+          </Box>
+        )}
+      </Box>
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Typography 
           id={`${program.id}-title`}

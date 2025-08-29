@@ -1,31 +1,47 @@
 import React from 'react';
 import { Box, Container, Typography, Grid, Avatar } from '@mui/material';
+import PastorKirby from '../assets/OurTeam/Pastor Kirby Preza.jpg';
+import NicoRelunia from '../assets/OurTeam/Nico Relunia.jpg';
+import MarkMurillo from '../assets/OurTeam/Mark Murillo.jpg';
+import JenniferPreza from '../assets/OurTeam/Jennifer Preza.jpg';
+import DalynAlcomendas from '../assets/OurTeam/Dalyn Alcomendas.jpg';
 
 const teamMembers = [
   {
-    name: 'Michael Relunia',
-    role: 'PASTOR',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc turpis diam, fringilla nec nisl et, fringilla molestie turpis. Maecenas in lectus neque. Nam at nibh sit amet ante pellentesque consectetur non eget nisi.'
+    name: 'Rev. Je young Jung',
+    role: 'CHURCH MODERATOR',
+    description: 'To overseer the church and the Pastor.',
+    image: null
   },
   {
-    name: 'Michael Relunia',
-    role: 'REV',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc turpis diam, fringilla nec nisl et, fringilla molestie turpis. Maecenas in lectus neque. Nam at nibh sit amet ante pellentesque consectetur non eget nisi.'
+    name: 'Pastor Kirby Preza',
+    role: 'SENIOR PASTOR',
+    description: 'Providing spiritual leadership and  give spiritual food and pray for people.',
+    image: PastorKirby
   },
   {
-    name: 'Michael Relunia',
-    role: 'MINISTRY DIRECTOR',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc turpis diam, fringilla nec nisl et, fringilla molestie turpis. Maecenas in lectus neque. Nam at nibh sit amet ante pellentesque consectetur non eget nisi.'
+    name: 'Deaconess Dalyn Alcomendas',
+    role: 'TREASURER',
+    description: 'Responsible for managing church finances and stewardship.',
+    image: DalynAlcomendas
   },
   {
-    name: 'Michael Relunia',
-    role: 'CHILDREN MINISTRY DIRECTOR',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc turpis diam, fringilla nec nisl et, fringilla molestie turpis. Maecenas in lectus neque. Nam at nibh sit amet ante pellentesque consectetur non eget nisi.'
-  },
-  {
-    name: 'Michael Relunia',
+    name: 'Deacon Nico Relunia',
     role: 'MUSIC DIRECTOR',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc turpis diam, fringilla nec nisl et, fringilla molestie turpis. Maecenas in lectus neque. Nam at nibh sit amet ante pellentesque consectetur non eget nisi.'
+    description: 'Leading our worship team and music ministry.',
+    image: NicoRelunia
+  },
+  {
+    name: 'Mrs. Jennifer Preza',
+    role: 'KIDS MINISTRY LEADER',
+    description: 'Nurturing the faith of our youngest members.',
+    image: JenniferPreza
+  },
+  {
+    name: 'Deacon Mark Murillo',
+    role: 'BIBLE STUDY LEADER',
+    description: 'Guiding our congregation in biblical teachings and discussions.',
+    image: MarkMurillo
   }
 ];
 
@@ -41,12 +57,15 @@ const OurTeam = () => {
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Box sx={{ textAlign: 'center' }}>
                 <Avatar
+                  src={member.image || ''}
+                  alt={member.name}
                   sx={{
                     width: 200,
                     height: 200,
                     mx: 'auto',
                     mb: 2,
-                    bgcolor: 'grey.200'
+                    bgcolor: 'grey.200',
+                    objectFit: 'cover'
                   }}
                 />
                 <Typography variant="h5" gutterBottom>
