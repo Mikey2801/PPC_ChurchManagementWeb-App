@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { Box, Container, TextField, Button, Typography, MenuItem, IconButton, InputAdornment, Paper } from '@mui/material';
+import { Box, Container, TextField, Button, Typography, MenuItem, IconButton, InputAdornment, Paper, Alert, CircularProgress } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
+import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 const LoginScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(location.state?.message || '');
+  
   const [formData, setFormData] = useState({
-    userType: 'Member',
-    username: '',
+    email: '',
     password: ''
   });
 
@@ -21,13 +28,43 @@ const LoginScreen = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add login logic here
-    if (formData.userType === 'Admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/dashboard');
+    setLoading(true);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      // Call login API
+      const response = await api.post('/api/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (response.data.success) {
+        const { token, user } = response.data.data;
+
+        // Store token and user data in localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // Update AuthContext state
+        setUser(user);
+
+        // Redirect based on user roles
+        if (user.roles && user.roles.includes('Admin')) {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    } catch (err) {
+      // Handle login errors
+      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials and try again.';
+      setError(errorMessage);
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,32 +134,13 @@ const LoginScreen = () => {
               gap: 2
             }}
           >
-            {/* User Type Selector */}
-            <TextField
-              select
-              fullWidth
-              name="userType"
-              value={formData.userType}
-              onChange={handleChange}
-              variant="outlined"
-              size="small"
-              sx={{ 
-                bgcolor: 'white',
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 1
-                }
-              }}
-            >
-              <MenuItem value="Member">Member</MenuItem>
-              <MenuItem value="Admin">Admin</MenuItem>
-            </TextField>
-
-            {/* Username Field */}
+            {/* Email Field */}
             <TextField
               fullWidth
-              name="username"
-              placeholder="Username"
-              value={formData.username}
+              name="email"
+              placeholder="Email Address"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
               variant="outlined"
               size="small"
@@ -167,11 +185,24 @@ const LoginScreen = () => {
               }}
             />
 
+            {error && (
+              <Alert severity="error" onClose={() => setError('')} sx={{ mt: 1 }}>
+                {error}
+              </Alert>
+            )}
+
+            {successMessage && (
+              <Alert severity="success" onClose={() => setSuccessMessage('')} sx={{ mt: 1 }}>
+                {successMessage}
+              </Alert>
+            )}
+
             {/* Login Button */}
             <Button
               type="submit"
               variant="contained"
               fullWidth
+              disabled={loading}
               sx={{ 
                 mt: 2,
                 py: 1,
@@ -182,7 +213,7 @@ const LoginScreen = () => {
                 }
               }}
             >
-              Login
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
             </Button>
 
             {/* Register Link */}

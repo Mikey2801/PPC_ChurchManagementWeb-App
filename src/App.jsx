@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 
 import Header from './components/Header.jsx';
 import Layout from './components/Layout.jsx';
+import AdminLayout from './components/admin/AdminLayout.jsx';
 import LandingPage from './pages/LandingPage';
 import AboutUs from './pages/AboutUs';
 import OurTeam from './pages/OurTeam';
@@ -26,6 +27,9 @@ import ProfileEdit from './pages/ProfileEdit';
 import BaptismalCertificate from './pages/BaptismalCertificate';
 import BaptismalClass from './pages/BaptismalClass';
 import BaptismalScheduling from './pages/BaptismalScheduling';
+import AdminDashboard from './pages/admin/dashboard/index.jsx';
+import AdminUsers from './pages/admin/users/index.jsx';
+import AdminMinistries from './pages/admin/ministries/index.jsx';
 
 // Wrapper for public pages
 export const PublicPageWrapper = ({ children }) => (
@@ -36,12 +40,56 @@ export const PublicPageWrapper = ({ children }) => (
 );
 
 const ProtectedRoute = ({ children }) => {
-  // For now, just render the children without any protection
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    // Show loading state while checking authentication
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    // User not authenticated, redirect to login
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Check if user has Admin role
+  const hasAdminRole = user.roles && user.roles.includes('Admin');
+  
+  if (!hasAdminRole) {
+    // User doesn't have admin role, redirect to dashboard
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return children;
 };
 
 const PublicRoute = ({ children }) => {
-  // For now, just render the children without any redirection
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (user) {
+    // User is already authenticated, redirect based on role
+    const hasAdminRole = user.roles && user.roles.includes('Admin');
+    return <Navigate to={hasAdminRole ? '/admin/dashboard' : '/dashboard'} replace />;
+  }
+
   return children;
 };
 
@@ -76,7 +124,7 @@ function AppRoutes() {
         }
       />
       
-      {/* Protected Routes */}
+      {/* Protected Routes - Member Dashboard */}
       <Route
         path="/dashboard/*"
         element={
@@ -95,6 +143,21 @@ function AppRoutes() {
         <Route path="baptismal-certificate" element={<BaptismalCertificate />} />
         <Route path="baptismal-class" element={<BaptismalClass />} />
         <Route path="baptismal-scheduling" element={<BaptismalScheduling />} />
+      </Route>
+
+      {/* Admin Routes */}
+      <Route
+        path="/admin/*"
+        element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }
+      >
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="ministries" element={<AdminMinistries />} />
       </Route>
 
       {/* Redirect unknown routes to home */}

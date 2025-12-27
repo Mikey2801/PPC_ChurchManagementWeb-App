@@ -1,35 +1,67 @@
-// Express API scaffold for MySQL and MongoDB
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import authRoutes from './routes/auth.js';
+
+// Load environment variables
+dotenv.config();
+
 const app = express();
-app.use(cors());
+
+// Middleware
+// CORS configuration - allow requests from frontend (adjust origin in production)
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Vite default port
+  credentials: true,
+}));
+
+// Parse JSON request bodies
 app.use(express.json());
 
-// --- MySQL Example ---
-// const mysql = require('mysql2');
-// const mysqlConn = mysql.createConnection({
-//   host: 'localhost', user: 'root', password: '', database: 'churchdb'
-// });
-// mysqlConn.connect();
-// app.get('/api/mysql/members', (req, res) => {
-//   mysqlConn.query('SELECT * FROM members', (err, results) => {
-//     if (err) return res.status(500).json({ error: err });
-//     res.json(results);
-//   });
-// });
+// Parse URL-encoded request bodies
+app.use(express.urlencoded({ extended: true }));
 
-// --- MongoDB Example ---
-// const { MongoClient } = require('mongodb');
-// const mongoClient = new MongoClient('mongodb://localhost:27017');
-// mongoClient.connect().then(() => {
-//   const db = mongoClient.db('churchdb');
-//   app.get('/api/mongo/members', async (req, res) => {
-//     const members = await db.collection('members').find().toArray();
-//     res.json(members);
-//   });
-// });
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Church Management API Running',
+    version: '1.0.0',
+  });
+});
 
-app.get('/', (req, res) => res.send('Church Management API Running'));
+// API Routes
+app.use('/api/auth', authRoutes);
 
+// Error handling middleware (must be last)
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  
+  // Default error status and message
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || 'Internal server error';
+  
+  res.status(status).json({
+    success: false,
+    message: message,
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+  });
+});
+
+// 404 handler for undefined routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+  });
+});
+
+// Start server
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`API server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`\n========================================`);
+  console.log(`Church Management API Server`);
+  console.log(`Running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`========================================\n`);
+});
