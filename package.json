@@ -24,7 +24,6 @@
     "axios": "^1.10.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
-    "firebase": "^11.9.1",
     "formik": "^2.4.6",
     "framer-motion": "^12.16.0",
     "prop-types": "^15.8.1",
