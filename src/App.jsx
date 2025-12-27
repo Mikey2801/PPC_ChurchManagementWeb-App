@@ -67,7 +67,7 @@ const AdminRoute = ({ children }) => {
   }
 
   // Check if user has Admin role
-  const hasAdminRole = user.roles && user.roles.includes('Admin');
+  const hasAdminRole = user.role === 'Admin';
   
   if (!hasAdminRole) {
     // User doesn't have admin role, redirect to dashboard

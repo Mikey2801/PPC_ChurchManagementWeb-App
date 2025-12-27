@@ -51,8 +51,8 @@ const LoginScreen = () => {
         // Update AuthContext state
         setUser(user);
 
-        // Redirect based on user roles
-        if (user.roles && user.roles.includes('Admin')) {
+        // Redirect based on user role
+        if (user.role === 'Admin') {
           navigate('/admin/dashboard');
         } else {
           navigate('/dashboard');

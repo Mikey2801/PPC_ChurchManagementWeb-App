@@ -107,33 +107,15 @@ router.post('/register', async (req, res) => {
 
       const memberId = memberResult.rows[0].member_id;
 
-      // Create user_account record
+      // Create user_account record with Member role (default role for new registrations)
       const userResult = await client.query(
-        `INSERT INTO user_account (member_id, email_address, password_hash, is_active)
-         VALUES ($1, $2, $3, $4)
+        `INSERT INTO user_account (member_id, email_address, password_hash, role, is_active)
+         VALUES ($1, $2, $3, $4, $5)
          RETURNING user_id`,
-        [memberId, email, passwordHash, true]
+        [memberId, email, passwordHash, 'Member', true]
       );
 
       const userId = userResult.rows[0].user_id;
-
-      // Get Member role_id
-      const roleResult = await client.query(
-        "SELECT role_id FROM role WHERE role_name = 'Member'"
-      );
-
-      if (roleResult.rows.length === 0) {
-        throw new Error('Member role not found. Please run seed scripts first.');
-      }
-
-      const memberRoleId = roleResult.rows[0].role_id;
-
-      // Assign Member role to new user
-      await client.query(
-        `INSERT INTO user_role (user_id, role_id)
-         VALUES ($1, $2)`,
-        [userId, memberRoleId]
-      );
 
       // Commit transaction
       await client.query('COMMIT');
@@ -193,7 +175,7 @@ router.post('/login', async (req, res) => {
 
     // Find user by email
     const userResult = await query(
-      `SELECT ua.user_id, ua.email_address, ua.password_hash, ua.is_active, ua.member_id,
+      `SELECT ua.user_id, ua.email_address, ua.password_hash, ua.is_active, ua.member_id, ua.role,
               m.first_name, m.last_name
        FROM user_account ua
        LEFT JOIN member m ON ua.member_id = m.member_id
@@ -228,23 +210,15 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Get user roles
-    const rolesResult = await query(
-      `SELECT r.role_name 
-       FROM user_role ur
-       JOIN role r ON ur.role_id = r.role_id
-       WHERE ur.user_id = $1`,
-      [user.user_id]
-    );
-
-    const roles = rolesResult.rows.map(row => row.role_name);
+    // Get user role (stored directly in user_account table)
+    const role = user.role;
 
     // Generate JWT token
     const tokenPayload = {
       user_id: user.user_id,
       email: user.email_address,
       member_id: user.member_id,
-      roles: roles,
+      role: role,
     };
 
     const token = generateToken(tokenPayload);
@@ -261,7 +235,7 @@ router.post('/login', async (req, res) => {
           member_id: user.member_id,
           first_name: user.first_name,
           last_name: user.last_name,
-          roles: roles,
+          role: role,
         },
       },
     });
@@ -286,7 +260,7 @@ router.get('/me', authenticate, async (req, res) => {
 
     // Get user info with member details
     const userResult = await query(
-      `SELECT ua.user_id, ua.email_address, ua.is_active, ua.member_id,
+      `SELECT ua.user_id, ua.email_address, ua.is_active, ua.member_id, ua.role,
               m.first_name, m.last_name, m.middle_name, m.birthdate, 
               m.gender, m.contact_number, m.email_address as member_email, m.address
        FROM user_account ua
@@ -304,17 +278,6 @@ router.get('/me', authenticate, async (req, res) => {
 
     const user = userResult.rows[0];
 
-    // Get user roles
-    const rolesResult = await query(
-      `SELECT r.role_name 
-       FROM user_role ur
-       JOIN role r ON ur.role_id = r.role_id
-       WHERE ur.user_id = $1`,
-      [userId]
-    );
-
-    const roles = rolesResult.rows.map(row => row.role_name);
-
     // Return user info
     return res.json({
       success: true,
@@ -329,7 +292,7 @@ router.get('/me', authenticate, async (req, res) => {
         gender: user.gender,
         contact_number: user.contact_number,
         address: user.address,
-        roles: roles,
+        role: user.role,
         is_active: user.is_active,
       },
     });

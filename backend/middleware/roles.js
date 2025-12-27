@@ -21,19 +21,23 @@ export const requireRole = (allowedRoles) => {
 
       const userId = req.user.user_id;
 
-      // Query user's roles from database
+      // Query user's role from database (stored directly in user_account table)
       const result = await query(
-        `SELECT r.role_name 
-         FROM user_role ur
-         JOIN role r ON ur.role_id = r.role_id
-         WHERE ur.user_id = $1`,
+        `SELECT role FROM user_account WHERE user_id = $1`,
         [userId]
       );
 
-      const userRoles = result.rows.map(row => row.role_name);
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+
+      const userRole = result.rows[0].role;
 
       // Check if user has any of the required roles
-      const hasRequiredRole = roles.some(role => userRoles.includes(role));
+      const hasRequiredRole = roles.includes(userRole);
 
       if (!hasRequiredRole) {
         return res.status(403).json({
@@ -42,8 +46,8 @@ export const requireRole = (allowedRoles) => {
         });
       }
 
-      // Attach user roles to request object for use in route handlers
-      req.user.roles = userRoles;
+      // Attach user role to request object for use in route handlers
+      req.user.role = userRole;
 
       // Continue to next middleware or route handler
       next();
@@ -79,28 +83,32 @@ export const requireAllRoles = (requiredRoles) => {
 
       const userId = req.user.user_id;
 
-      // Query user's roles from database
+      // Query user's role from database (stored directly in user_account table)
       const result = await query(
-        `SELECT r.role_name 
-         FROM user_role ur
-         JOIN role r ON ur.role_id = r.role_id
-         WHERE ur.user_id = $1`,
+        `SELECT role FROM user_account WHERE user_id = $1`,
         [userId]
       );
 
-      const userRoles = result.rows.map(row => row.role_name);
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
 
-      // Check if user has ALL required roles
-      const hasAllRoles = requiredRoles.every(role => userRoles.includes(role));
+      const userRole = result.rows[0].role;
+
+      // Check if user has ALL required roles (for single role per user, this means role must match one of them)
+      const hasAllRoles = requiredRoles.includes(userRole);
 
       if (!hasAllRoles) {
         return res.status(403).json({
           success: false,
-          message: `Access denied. Required all roles: ${requiredRoles.join(', ')}`,
+          message: `Access denied. Required role: ${requiredRoles.join(' or ')}`,
         });
       }
 
-      req.user.roles = userRoles;
+      req.user.role = userRole;
       next();
     } catch (error) {
       console.error('Error in requireAllRoles middleware:', error);

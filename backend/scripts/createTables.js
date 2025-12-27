@@ -29,39 +29,21 @@ const createTables = async () => {
     `);
     console.log('✓ Member table created');
 
-    // Create role table
-    console.log('Creating role table...');
-    await query(`
-      CREATE TABLE IF NOT EXISTS role (
-        role_id BIGSERIAL PRIMARY KEY,
-        role_name VARCHAR(30) UNIQUE NOT NULL
-      )
-    `);
-    console.log('✓ Role table created');
-
-    // Create user_account table
+    // Create user_account table with role column (simplified - one role per user)
     console.log('Creating user_account table...');
     await query(`
       CREATE TABLE IF NOT EXISTS user_account (
         user_id BIGSERIAL PRIMARY KEY,
-        member_id BIGINT UNIQUE REFERENCES member(member_id) ON DELETE CASCADE,
+        member_id BIGINT UNIQUE NOT NULL REFERENCES member(member_id) ON DELETE CASCADE,
         email_address VARCHAR(50) UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
-        is_active BOOLEAN DEFAULT TRUE
+        role VARCHAR(30) NOT NULL DEFAULT 'Member',
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT check_role CHECK (role IN ('Admin', 'Treasurer', 'Member'))
       )
     `);
-    console.log('✓ User_account table created');
-
-    // Create user_role table (many-to-many relationship)
-    console.log('Creating user_role table...');
-    await query(`
-      CREATE TABLE IF NOT EXISTS user_role (
-        user_id BIGINT REFERENCES user_account(user_id) ON DELETE CASCADE,
-        role_id BIGINT REFERENCES role(role_id) ON DELETE CASCADE,
-        PRIMARY KEY (user_id, role_id)
-      )
-    `);
-    console.log('✓ User_role table created');
+    console.log('✓ User_account table created (with role column)');
 
     console.log('\n========================================');
     console.log('All tables created successfully!');
