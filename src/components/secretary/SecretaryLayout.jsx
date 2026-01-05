@@ -77,8 +77,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/secretary' },
-  { text: 'Schedule Mass', icon: <EventIcon />, path: '/secretary/mass-schedules' },
-  { text: 'Verify Attendance', icon: <CheckCircleIcon />, path: '/secretary/attendance' },
+  { text: 'Schedule Mass', icon: <EventIcon />, path: '/secretary/schedule-mass' },
+  { text: 'Verify Attendance', icon: <CheckCircleIcon />, path: '/secretary/verify-attendance' },
 ];
 
 export default function SecretaryLayout() {

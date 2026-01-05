@@ -31,9 +31,9 @@ import AdminDashboard from './pages/admin/dashboard/index.jsx';
 import AdminUsers from './pages/admin/users/index.jsx';
 import AdminMinistries from './pages/admin/ministries/index.jsx';
 import SecretaryLayout from './components/secretary/SecretaryLayout.jsx';
-import SecretaryDashboard from './pages/secretary/dashboard/index.jsx';
-import MassSchedules from './pages/secretary/mass-schedules/index.jsx';
-import AttendanceVerification from './pages/secretary/attendance/index.jsx';
+import SecretaryDashboard from './pages/secretary/SecretaryDashboard.jsx';
+import ScheduleMass from './pages/secretary/ScheduleMass.jsx';
+import VerifyAttendance from './pages/secretary/VerifyAttendance.jsx';
 
 // Wrapper for public pages
 export const PublicPageWrapper = ({ children }) => (
@@ -202,8 +202,8 @@ function AppRoutes() {
       >
         <Route index element={<Navigate to="/secretary" replace />} />
         <Route path="" element={<SecretaryDashboard />} />
-        <Route path="mass-schedules" element={<MassSchedules />} />
-        <Route path="attendance" element={<AttendanceVerification />} />
+        <Route path="schedule-mass" element={<ScheduleMass />} />
+        <Route path="verify-attendance" element={<VerifyAttendance />} />
       </Route>
 
       {/* Redirect unknown routes to home */}

@@ -28,9 +28,9 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import api from '../../../utils/api';
+import api from '../../utils/api';
 
-export default function MassSchedules() {
+export default function ScheduleMass() {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

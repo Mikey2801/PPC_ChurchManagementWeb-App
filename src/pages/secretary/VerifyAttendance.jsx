@@ -28,9 +28,9 @@ import {
   Cancel as CancelIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import api from '../../../utils/api';
+import api from '../../utils/api';
 
-export default function AttendanceVerification() {
+export default function VerifyAttendance() {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

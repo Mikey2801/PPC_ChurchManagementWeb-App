@@ -15,7 +15,7 @@ import {
   Pending as PendingIcon,
   Cancel as CancelIcon,
 } from "@mui/icons-material";
-import api from "../../../utils/api";
+import api from "../../utils/api";
 
 export default function SecretaryDashboard() {
   const [loading, setLoading] = useState(true);
@@ -188,7 +188,7 @@ export default function SecretaryDashboard() {
                 },
               }}
               onClick={() =>
-                (window.location.href = "/secretary/mass-schedules")
+                (window.location.href = "/secretary/schedule-mass")
               }
             >
               <Box display="flex" alignItems="center" gap={2}>
@@ -209,7 +209,7 @@ export default function SecretaryDashboard() {
                   transition: "all 0.2s",
                 },
               }}
-              onClick={() => (window.location.href = "/secretary/attendance")}
+              onClick={() => (window.location.href = "/secretary/verify-attendance")}
             >
               <Box display="flex" alignItems="center" gap={2}>
                 <CheckCircleIcon color="success" />
@@ -222,3 +222,4 @@ export default function SecretaryDashboard() {
     </Box>
   );
 }
+
