@@ -23,18 +23,12 @@ import EventIcon from "@mui/icons-material/Event";
 import GroupsIcon from "@mui/icons-material/Groups";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import SettingsIcon from "@mui/icons-material/Settings";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 const MemberDashboard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
 
   const quickActions = [
     {
@@ -80,11 +74,11 @@ const MemberDashboard = () => {
               mr: isMobile ? 0 : 3,
             }}
           >
-            {user?.name?.charAt(0).toUpperCase() || "U"}
+            {user?.first_name?.charAt(0).toUpperCase() || "U"}
           </Avatar>
           <Box sx={{ textAlign: isMobile ? "center" : "left" }}>
             <Typography variant="h4" component="h1" gutterBottom>
-              Welcome back, {user?.name || "User"}!
+              Welcome back, {user?.first_name || "User"}!
             </Typography>
             <Typography variant="body1" color="text.secondary">
               {user?.email || "user@example.com"}
@@ -98,15 +92,6 @@ const MemberDashboard = () => {
               size={isMobile ? "small" : "medium"}
             >
               Settings
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<ExitToAppIcon />}
-              onClick={handleLogout}
-              size={isMobile ? "small" : "medium"}
-            >
-              Logout
             </Button>
           </Box>
         </Box>
