@@ -53,7 +53,7 @@ const statusColors = {
 };
 
 const roleColors = {
-  Admin: 'primary',
+  'Administrative Pastor': 'primary',
   'Ministry Leader': 'secondary',
   User: 'default',
 };

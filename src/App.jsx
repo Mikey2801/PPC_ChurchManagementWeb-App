@@ -70,8 +70,8 @@ const AdminRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Check if user has Admin role
-  const hasAdminRole = user.role === 'Admin';
+  // Check if user has Administrative Pastor role
+  const hasAdminRole = user.role === 'Administrative Pastor';
   
   if (!hasAdminRole) {
     // User doesn't have admin role, redirect to dashboard
@@ -92,8 +92,8 @@ const SecretaryRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Check if user has Secretary or Admin role
-  const hasSecretaryRole = user.role === 'Secretary' || user.role === 'Admin';
+  // Check if user has Secretary or Administrative Pastor role
+  const hasSecretaryRole = user.role === 'Secretary' || user.role === 'Administrative Pastor';
   
   if (!hasSecretaryRole) {
     // User doesn't have secretary role, redirect to dashboard
@@ -112,7 +112,7 @@ const PublicRoute = ({ children }) => {
 
   if (user) {
     // User is already authenticated, redirect based on role
-    if (user.role === 'Admin') {
+    if (user.role === 'Administrative Pastor') {
       return <Navigate to="/admin/dashboard" replace />;
     } else if (user.role === 'Secretary') {
       return <Navigate to="/secretary" replace />;

@@ -25,7 +25,7 @@ const addSecretaryRole = async () => {
     console.log('Adding new constraint with Secretary role...');
     await query(`
       ALTER TABLE user_account
-      ADD CONSTRAINT check_role CHECK (role IN ('Admin', 'Treasurer', 'Secretary', 'Member'))
+      ADD CONSTRAINT check_role CHECK (role IN ('Administrative Pastor', 'Treasurer', 'Secretary', 'Member'))
     `);
     console.log('✓ New constraint added with Secretary role');
 
