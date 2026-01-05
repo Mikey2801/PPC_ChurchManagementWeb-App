@@ -269,8 +269,7 @@ function AppRoutes() {
           </SecretaryRoute>
         }
       >
-        <Route index element={<Navigate to="/secretary" replace />} />
-        <Route path="" element={<SecretaryDashboard />} />
+        <Route index element={<SecretaryDashboard />} />
         <Route path="schedule-mass" element={<ScheduleMass />} />
         <Route path="verify-attendance" element={<VerifyAttendance />} />
       </Route>
