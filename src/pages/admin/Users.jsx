@@ -43,7 +43,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 
-import { getUsers, addUser, deleteUser } from '../../../mock/adminDatabase';
+import { getUsers, addUser, deleteUser } from '../../mock/adminDatabase';
 
 const statusColors = {
   Active: 'success',
@@ -441,3 +441,4 @@ export default function Users() {
     </Box>
   );
 }
+

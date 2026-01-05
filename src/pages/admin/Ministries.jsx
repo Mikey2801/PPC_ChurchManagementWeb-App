@@ -38,7 +38,7 @@ import {
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { getMinistries, addMinistry, deleteMinistry } from '../../../mock/adminDatabase';
+import { getMinistries, addMinistry, deleteMinistry } from '../../mock/adminDatabase';
 
 const statusColors = {
   Active: 'success',
@@ -227,3 +227,4 @@ export default function Ministries() {
     </Box>
   );
 }
+
